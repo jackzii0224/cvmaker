@@ -877,7 +877,11 @@ export default function App() {
 
   const handlePrint = async () => {
     const element = document.getElementById('cv-preview-content');
-    if (!element) return;
+    if (!element) {
+      console.error('PDF Export Error: cv-preview-content element not found');
+      alert('Could not find the CV content to export. Please make sure you are in the Preview tab.');
+      return;
+    }
 
     setIsGenerating(true);
 
@@ -886,8 +890,18 @@ export default function App() {
       const isHidden = window.getComputedStyle(element).display === 'none';
       if (isHidden) {
         setActiveTab('preview');
-        // Wait for DOM update
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Wait for DOM update - increased for production reliability
+        await new Promise(resolve => setTimeout(resolve, 800));
+      }
+
+      // Re-check element after tab switch
+      const finalElement = document.getElementById('cv-preview-content');
+      if (!finalElement) throw new Error('CV content element lost after tab switch');
+
+      // Robust check for html2pdf function (handles different bundling behaviors)
+      const html2pdfFunc = typeof html2pdf === 'function' ? html2pdf : (html2pdf as any).default;
+      if (typeof html2pdfFunc !== 'function') {
+        throw new Error('PDF library (html2pdf) not correctly loaded');
       }
 
       const opt = {
@@ -899,37 +913,37 @@ export default function App() {
           useCORS: true,
           letterRendering: true,
           scrollY: 0,
-          windowWidth: 794, // Standard A4 width in pixels at 96dpi
+          windowWidth: 1024,
           onclone: (clonedDoc: Document) => {
             // Remove problematic decorative elements for PDF
             const blurs = clonedDoc.querySelectorAll('.blur-3xl');
             blurs.forEach(el => (el as HTMLElement).style.display = 'none');
             
-            // Fix any remaining oklch/oklab/color-mix issues by forcing standard colors
-            // html2canvas does not support modern color functions used in Tailwind v4
+            // Remove visual page break indicators that might use modern CSS units/gradients
             const preview = clonedDoc.getElementById('cv-preview-content');
             if (preview) {
               preview.style.fontFamily = 'Arial, sans-serif';
+              preview.style.backgroundImage = 'none'; // Remove gradient indicators
               
               // Recursively find all elements and replace modern colors in their style and other attributes
               const allElements = preview.getElementsByTagName('*');
+              // Improved regex to handle nested parentheses (like var() inside oklch)
+              const modernColorRegex = /(?:oklch|oklab|color-mix|light-dark)\((?:[^()]+|\([^()]*\))*\)/g;
+              
               for (let i = 0; i < allElements.length; i++) {
                 const el = allElements[i] as HTMLElement;
                 
                 // 1. Clean inline styles
                 const styleAttr = el.getAttribute('style');
-                if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab') || styleAttr.includes('color-mix'))) {
-                  const safeStyle = styleAttr
-                    .replace(/oklch\([^)]+\)/g, currentTheme.primary)
-                    .replace(/oklab\([^)]+\)/g, currentTheme.primary)
-                    .replace(/color-mix\([^)]+\)/g, currentTheme.primary);
+                if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab') || styleAttr.includes('color-mix') || styleAttr.includes('light-dark'))) {
+                  const safeStyle = styleAttr.replace(modernColorRegex, currentTheme.primary);
                   el.setAttribute('style', safeStyle);
                 }
 
                 // 2. Clean common color attributes for SVGs/Icons
                 ['fill', 'stroke', 'color'].forEach(attr => {
                   const val = el.getAttribute(attr);
-                  if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('color-mix'))) {
+                  if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('color-mix') || val.includes('light-dark'))) {
                     el.setAttribute(attr, currentTheme.primary);
                   }
                 });
@@ -938,13 +952,12 @@ export default function App() {
 
             // AGGRESSIVE FIX: Strip modern color functions from ALL style tags
             const styleTags = clonedDoc.getElementsByTagName('style');
+            const modernColorRegexGlobal = /(?:oklch|oklab|color-mix|light-dark)\((?:[^()]+|\([^()]*\))*\)/g;
+            
             for (let i = 0; i < styleTags.length; i++) {
               const styleTag = styleTags[i];
-              if (styleTag.innerHTML.includes('oklch') || styleTag.innerHTML.includes('oklab') || styleTag.innerHTML.includes('color-mix')) {
-                styleTag.innerHTML = styleTag.innerHTML
-                  .replace(/oklch\([^)]+\)/g, currentTheme.primary)
-                  .replace(/oklab\([^)]+\)/g, currentTheme.primary)
-                  .replace(/color-mix\([^)]+\)/g, currentTheme.primary);
+              if (styleTag.innerHTML.includes('oklch') || styleTag.innerHTML.includes('oklab') || styleTag.innerHTML.includes('color-mix') || styleTag.innerHTML.includes('light-dark')) {
+                styleTag.innerHTML = styleTag.innerHTML.replace(modernColorRegexGlobal, currentTheme.primary);
               }
             }
 
@@ -978,7 +991,7 @@ export default function App() {
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      const worker = html2pdf().set(opt).from(element);
+      const worker = html2pdfFunc().set(opt).from(finalElement);
       await worker.save();
     } catch (error) {
       console.error('PDF Generation Error:', error);
