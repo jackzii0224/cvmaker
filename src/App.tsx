@@ -24,6 +24,7 @@ interface Theme {
   sidebarBg: string;
   textMain: string;
   textSidebar: string;
+  layout?: 'default' | 'modern-green' | 'navy-sidebar' | 'clean-white' | 'timeline-centered' | 'modern-minimal';
 }
 
 interface Education {
@@ -48,6 +49,18 @@ interface Reference {
   contact: string;
 }
 
+interface Skill {
+  id: string;
+  name: string;
+  level: number;
+}
+
+interface Language {
+  id: string;
+  name: string;
+  level: string;
+}
+
 interface CVData {
   personal: {
     name: string;
@@ -58,13 +71,15 @@ interface CVData {
     gender: string;
     linkedin: string;
     location: string;
+    photo?: string;
   };
   profile: string;
   goals: string;
   education: Education[];
   experience: Experience[];
   certificates: string[];
-  skills: string[];
+  skills: Skill[];
+  languages: Language[];
   qualities: string[];
   hobbies: string[];
   references: Reference[];
@@ -83,6 +98,7 @@ const initialData: CVData = {
     gender: "Female",
     linkedin: "linkedin.com/in/betcy-rickz",
     location: "Oksapmin",
+    photo: "https://picsum.photos/seed/betcy/200/200",
   },
   profile: "I am a motivated and responsible student currently working on improving academic results while preparing for further education. Seeking a part-time position where I can develop practical skills, contribute positively to a team, and gain work experience. I am known for being reliable, quick to learn, and having a strong work ethic. I can blend in any work environment.",
   goals: "To secure a challenging position in a reputable organization where I can utilize my technical skills and contribute to the growth of the company while enhancing my professional knowledge.",
@@ -93,207 +109,638 @@ const initialData: CVData = {
   experience: [
     { id: '1', company: "Local Community Center", role: "Volunteer Assistant", year: "2023 - Present", description: "Assisted in organizing community events and managing administrative tasks." }
   ],
-  certificates: ["GR 12 Certifcate", "Gr 10 Certificate"],
-  skills: ["Basic Computing", "Interpersonal skills", "Strong communication", "Fast learner and adaptable"],
-  qualities: ["Problem-solving ability", "Team collaboration skills", "Strong communication skills", "Time management proficiency", "Continuous learning mindset"],
-  hobbies: ["Playing soccer", "Reading books", "Cooking"],
-  references: [
-    { id: '1', name: "John Doe", position: "Principal, Telefomin Secondary", contact: "john.doe@email.com / +675 1234567" }
+  certificates: ["Gr 12 Certificate", "Gr 10 Certifcate"],
+  skills: [
+    { id: '1', name: "Problem-solving ability", level: 85 },
+    { id: '2', name: "Team collaboration skills", level: 90 },
+    { id: '3', name: "Strong communication skills", level: 95 },
+    { id: '4', name: "Time management", level: 100 }
   ],
+  languages: [
+    { id: '1', name: "English", level: "Fluent" },
+    { id: '2', name: "Tok Pisin", level: "Native" }
+  ],
+  qualities: ["Problem-solving ability", "Team collaboration skills", "Strong communication skills", "Time management"],
+  hobbies: ["Playing soccer", "Reading books", "Cooking"],
+  references: [],
   declaration: "I hereby declare that all the information provided above is true to the best of my knowledge and belief."
 };
 
 const themes: Theme[] = [
   {
-    id: 'olive',
-    name: 'Classic Olive',
-    primary: '#5a5a32',
-    secondary: '#4a4a2a',
-    accent: '#d9d9c1',
-    sidebarBg: '#f7f7f2',
-    textMain: '#1c1917',
-    textSidebar: '#4a4a2a'
+    id: 'betcy-rickz',
+    name: 'Classic Sidebar',
+    primary: '#5a5a40',
+    secondary: '#8e8e8e',
+    accent: '#f5f5f0',
+    sidebarBg: '#ffffff',
+    textMain: '#111827',
+    textSidebar: '#5a5a40',
+    layout: 'default'
   },
   {
-    id: 'navy',
-    name: 'Professional Navy',
-    primary: '#1e293b',
-    secondary: '#0f172a',
-    accent: '#cbd5e1',
-    sidebarBg: '#f8fafc',
-    textMain: '#0f172a',
-    textSidebar: '#1e293b'
-  },
-  {
-    id: 'slate',
-    name: 'Modern Slate',
-    primary: '#334155',
-    secondary: '#1e293b',
-    accent: '#e2e8f0',
-    sidebarBg: '#f1f5f9',
-    textMain: '#1e293b',
-    textSidebar: '#334155'
-  },
-  {
-    id: 'rose',
-    name: 'Elegant Rose',
-    primary: '#881337',
-    secondary: '#4c0519',
-    accent: '#fce7f3',
-    sidebarBg: '#fff1f2',
-    textMain: '#4c0519',
-    textSidebar: '#881337'
-  },
-  {
-    id: 'charcoal',
-    name: 'Charcoal Dark',
-    primary: '#171717',
-    secondary: '#0a0a0a',
-    accent: '#404040',
-    sidebarBg: '#f5f5f5',
-    textMain: '#171717',
-    textSidebar: '#262626'
-  },
-  {
-    id: 'emerald',
-    name: 'Emerald Green',
-    primary: '#064e3b',
-    secondary: '#065f46',
-    accent: '#d1fae5',
-    sidebarBg: '#f0fdf4',
-    textMain: '#064e3b',
-    textSidebar: '#065f46'
-  },
-  {
-    id: 'gold',
-    name: 'Golden Amber',
-    primary: '#78350f',
-    secondary: '#92400e',
-    accent: '#fef3c7',
-    sidebarBg: '#fffbeb',
-    textMain: '#78350f',
-    textSidebar: '#92400e'
-  },
-  {
-    id: 'sky',
-    name: 'Sky Blue',
-    primary: '#0c4a6e',
-    secondary: '#075985',
-    accent: '#e0f2fe',
-    sidebarBg: '#f0f9ff',
-    textMain: '#0c4a6e',
-    textSidebar: '#075985'
-  },
-  {
-    id: 'minimalist',
-    name: 'Minimalist Gray',
-    primary: '#262626',
-    secondary: '#404040',
-    accent: '#e5e5e5',
-    sidebarBg: '#fafafa',
-    textMain: '#262626',
-    textSidebar: '#404040'
-  },
-  {
-    id: 'midnight',
-    name: 'Midnight Blue',
-    primary: '#1e1b4b',
-    secondary: '#312e81',
-    accent: '#c7d2fe',
-    sidebarBg: '#eef2ff',
-    textMain: '#1e1b4b',
-    textSidebar: '#312e81'
-  },
-  {
-    id: 'terracotta',
-    name: 'Terracotta',
-    primary: '#7c2d12',
-    secondary: '#9a3412',
-    accent: '#ffedd5',
-    sidebarBg: '#fff7ed',
-    textMain: '#7c2d12',
-    textSidebar: '#9a3412'
-  },
-  {
-    id: 'lavender',
-    name: 'Lavender',
-    primary: '#4c1d95',
-    secondary: '#5b21b6',
-    accent: '#ede9fe',
-    sidebarBg: '#f5f3ff',
-    textMain: '#4c1d95',
-    textSidebar: '#5b21b6'
-  },
-  {
-    id: 'maroon',
-    name: 'Deep Maroon',
-    primary: '#7f1d1d',
-    secondary: '#991b1b',
-    accent: '#fee2e2',
-    sidebarBg: '#fef2f2',
-    textMain: '#7f1d1d',
-    textSidebar: '#991b1b'
-  },
-  {
-    id: 'onyx',
-    name: 'Onyx Black',
+    id: 'sam-hill',
+    name: 'Modern Minimal',
     primary: '#000000',
-    secondary: '#1a1a1a',
-    accent: '#ffffff',
+    secondary: '#333333',
+    accent: '#f3f4f6',
     sidebarBg: '#ffffff',
     textMain: '#000000',
-    textSidebar: '#1a1a1a'
+    textSidebar: '#333333',
+    layout: 'modern-minimal'
   },
   {
-    id: 'ocean',
-    name: 'Ocean Deep',
-    primary: '#003366',
-    secondary: '#004080',
-    accent: '#e6f2ff',
-    sidebarBg: '#f0f8ff',
-    textMain: '#003366',
-    textSidebar: '#004080'
+    id: 'peter-madison',
+    name: 'Clean Teal',
+    primary: '#0d9488',
+    secondary: '#0f766e',
+    accent: '#f0fdfa',
+    sidebarBg: '#ffffff',
+    textMain: '#111827',
+    textSidebar: '#0d9488',
+    layout: 'clean-white'
   },
   {
-    id: 'coffee',
-    name: 'Coffee Roast',
-    primary: '#3e2723',
-    secondary: '#4e342e',
-    accent: '#efebe9',
-    sidebarBg: '#fafafa',
-    textMain: '#3e2723',
-    textSidebar: '#4e342e'
-  },
-  {
-    id: 'forest',
-    name: 'Forest Green',
-    primary: '#14532d',
-    secondary: '#166534',
-    accent: '#dcfce7',
-    sidebarBg: '#f0fdf4',
-    textMain: '#14532d',
-    textSidebar: '#166534'
-  },
-  {
-    id: 'plum',
-    name: 'Royal Plum',
-    primary: '#581c87',
-    secondary: '#6b21a8',
-    accent: '#f3e8ff',
-    sidebarBg: '#faf5ff',
-    textMain: '#581c87',
-    textSidebar: '#6b21a8'
+    id: 'joanna-brown',
+    name: 'Sage Sidebar',
+    primary: '#4d7c0f',
+    secondary: '#3f6212',
+    accent: '#f7fee7',
+    sidebarBg: '#f7fee7',
+    textMain: '#111827',
+    textSidebar: '#4d7c0f',
+    layout: 'modern-green'
   }
 ];
 
 // --- Components ---
+
+// --- Layout Components ---
+
+function DefaultLayout({ data, currentTheme }: { data: CVData, currentTheme: Theme }) {
+  return (
+    <div className="flex flex-col flex-1 bg-white">
+      {/* Top Header Bar */}
+      <div className="bg-[#f5f5f0] py-2 text-center">
+        <span className="text-[10px] tracking-[0.4em] uppercase font-medium text-stone-500">R E S U M E ( C V )</span>
+      </div>
+
+      <div className="flex flex-1">
+        {/* Sidebar */}
+        <div className="w-[35%] bg-[#f5f5f0] flex flex-col border-r border-stone-100">
+          {/* Name Box */}
+          <div className="p-8 pt-12 text-center" style={{ backgroundColor: currentTheme.primary }}>
+            <h2 className="font-bold text-3xl tracking-wider text-white uppercase leading-tight">{data.personal.name}</h2>
+            <div className="w-12 h-1 bg-white/30 mx-auto mt-4 rounded-full"></div>
+          </div>
+
+          <div className="p-8 space-y-12">
+            {/* Personal Details */}
+            <section className="space-y-6">
+              <h3 className="font-bold text-lg text-[#5a5a40] border-b border-stone-200 pb-2" style={{ color: currentTheme.primary }}>Personal details</h3>
+              <ul className="space-y-5">
+                <li className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center bg-white">
+                    <User size={14} className="text-stone-400" />
+                  </div>
+                  <span className="text-xs font-medium text-stone-600 uppercase tracking-wide">{data.personal.name}</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center bg-white">
+                    <Mail size={14} className="text-stone-400" />
+                  </div>
+                  <span className="text-xs font-medium text-stone-600">{data.personal.email}</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center bg-white">
+                    <Phone size={14} className="text-stone-400" />
+                  </div>
+                  <span className="text-xs font-medium text-stone-600">{data.personal.phone}</span>
+                </li>
+                <li className="flex items-start gap-4">
+                  <div className="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center bg-white shrink-0">
+                    <MapPin size={14} className="text-stone-400" />
+                  </div>
+                  <span className="text-xs font-medium text-stone-600 leading-relaxed">{data.personal.address}</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center bg-white">
+                    <Calendar size={14} className="text-stone-400" />
+                  </div>
+                  <span className="text-xs font-medium text-stone-600">{data.personal.dob}</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center bg-white">
+                    <MapPin size={14} className="text-stone-400" />
+                  </div>
+                  <span className="text-xs font-medium text-stone-600">{data.personal.location}</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center bg-white">
+                    <User size={14} className="text-stone-400" />
+                  </div>
+                  <span className="text-xs font-medium text-stone-600">{data.personal.gender}</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-full border border-stone-200 flex items-center justify-center bg-white">
+                    <Linkedin size={14} className="text-stone-400" />
+                  </div>
+                  <span className="text-xs font-medium text-stone-600">{data.personal.linkedin}</span>
+                </li>
+              </ul>
+            </section>
+
+            {/* Qualities */}
+            <section className="space-y-6">
+              <h3 className="font-bold text-lg text-[#5a5a40] border-b border-stone-200 pb-2" style={{ color: currentTheme.primary }}>Qualities</h3>
+              <ul className="space-y-4">
+                {data.qualities.map((q, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <div className="w-2 h-2 mt-1.5 shrink-0" style={{ backgroundColor: currentTheme.primary }}></div>
+                    <span className="text-sm text-stone-700 leading-tight">{q}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 p-12 space-y-12 bg-white">
+          <section className="space-y-4">
+            <h3 className="text-3xl font-bold text-[#5a5a40] border-b border-stone-200 pb-2" style={{ color: currentTheme.primary }}>Profile</h3>
+            <p className="text-sm text-stone-600 leading-relaxed">{data.profile}</p>
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-3xl font-bold text-[#5a5a40] border-b border-stone-200 pb-2" style={{ color: currentTheme.primary }}>Career Goals</h3>
+            <p className="text-sm text-stone-600 leading-relaxed">{data.goals}</p>
+          </section>
+
+          <section className="space-y-8">
+            <h3 className="text-3xl font-bold text-[#5a5a40] border-b border-stone-200 pb-2" style={{ color: currentTheme.primary }}>Education</h3>
+            <div className="space-y-8">
+              {data.education.map((edu, i) => (
+                <div key={i} className="space-y-1">
+                  <div className="flex justify-between items-baseline">
+                    <h4 className="font-bold text-lg text-stone-800">{edu.degree}</h4>
+                    <span className="text-sm font-bold text-stone-800">{edu.year}</span>
+                  </div>
+                  <p className="text-sm italic text-stone-500 font-medium">{edu.school}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-8">
+            <h3 className="text-3xl font-bold text-[#5a5a40] border-b border-stone-200 pb-2" style={{ color: currentTheme.primary }}>Work Experience</h3>
+            <div className="space-y-8">
+              {data.experience.map((exp, i) => (
+                <div key={i} className="space-y-1">
+                  <div className="flex justify-between items-baseline">
+                    <h4 className="font-bold text-lg text-stone-800">{exp.role}</h4>
+                    <span className="text-sm font-bold text-stone-800">{exp.year}</span>
+                  </div>
+                  <p className="text-sm italic text-stone-500 font-medium">{exp.company}</p>
+                  <p className="text-sm text-stone-600 leading-relaxed mt-2">{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ModernMinimalLayout({ data, currentTheme }: { data: CVData, currentTheme: Theme }) {
+  return (
+    <div className="flex-1 bg-white p-16 space-y-12">
+      <header className="space-y-6 border-b-4 border-stone-900 pb-8">
+        <h1 className="text-6xl font-black tracking-tighter text-stone-900 uppercase leading-none">{data.personal.name}</h1>
+        <p className="text-xl font-bold text-stone-600 tracking-wide">{data.profile.split('.')[0]}</p>
+      </header>
+
+      <div className="grid grid-cols-12 gap-12">
+        <div className="col-span-4 space-y-10">
+          <section className="space-y-4">
+            <h3 className="text-sm font-black uppercase tracking-widest bg-stone-900 text-white px-3 py-1 inline-block">Personal Details</h3>
+            <div className="space-y-2 text-sm">
+              <p className="flex items-center gap-2"><Mail size={14} /> {data.personal.email}</p>
+              <p className="flex items-center gap-2"><Phone size={14} /> {data.personal.phone}</p>
+              <p className="flex items-center gap-2"><MapPin size={14} /> {data.personal.address}</p>
+              <p className="flex items-center gap-2 font-bold text-indigo-600"><Linkedin size={14} /> {data.personal.linkedin}</p>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-sm font-black uppercase tracking-widest bg-stone-900 text-white px-3 py-1 inline-block">Skills</h3>
+            <div className="grid grid-cols-1 gap-2">
+              {data.skills.map((skill, i) => (
+                <div key={i} className="text-sm font-medium border-b border-stone-100 pb-1">{skill.name}</div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <div className="col-span-8 space-y-12">
+          <section className="space-y-6">
+            <h3 className="text-xl font-black uppercase tracking-tighter border-b-2 border-stone-900 pb-2">Employment</h3>
+            <div className="space-y-8">
+              {data.experience.map((exp, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="flex justify-between items-baseline">
+                    <h4 className="font-bold text-lg">{exp.role}</h4>
+                    <span className="text-sm font-bold text-stone-400">{exp.year}</span>
+                  </div>
+                  <p className="text-sm font-bold text-stone-500">{exp.company}</p>
+                  <p className="text-sm text-stone-600 leading-relaxed">{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-6">
+            <h3 className="text-xl font-black uppercase tracking-tighter border-b-2 border-stone-900 pb-2">Education</h3>
+            <div className="space-y-6">
+              {data.education.map((edu, i) => (
+                <div key={i} className="flex justify-between items-baseline">
+                  <div>
+                    <h4 className="font-bold">{edu.degree}</h4>
+                    <p className="text-sm text-stone-500">{edu.school}</p>
+                  </div>
+                  <span className="text-sm font-bold text-stone-400">{edu.year}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ModernGreenLayout({ data, currentTheme }: { data: CVData, currentTheme: Theme }) {
+  return (
+    <div className="flex flex-1">
+      {/* Left Column */}
+      <div className="w-[40%] flex flex-col" style={{ backgroundColor: currentTheme.sidebarBg }}>
+        <div className="p-12 flex flex-col items-center">
+          <div className="relative w-48 h-48 mb-8">
+            <div className="absolute inset-0 rotate-45 border-4" style={{ borderColor: currentTheme.primary }}></div>
+            <div className="absolute inset-2 rotate-45 overflow-hidden bg-stone-100">
+              {data.personal.photo ? (
+                <img src={data.personal.photo} alt={data.personal.name} className="w-full h-full object-cover -rotate-45 scale-150" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center -rotate-45">
+                  <User size={64} className="text-stone-300" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="text-center space-y-2 mb-12">
+            <h2 className="font-bold text-3xl tracking-tighter uppercase" style={{ color: currentTheme.primary }}>{data.personal.name}</h2>
+            <p className="text-sm font-medium tracking-widest uppercase opacity-60">Professional Profile</p>
+          </div>
+
+          <div className="w-full space-y-10 px-6">
+            <div className="sidebar-section">
+              <h3 className="font-bold text-sm uppercase tracking-widest border-b-2 pb-1 mb-4" style={{ borderColor: currentTheme.primary }}>Profile</h3>
+              <p className="text-xs leading-relaxed text-stone-600">{data.profile}</p>
+            </div>
+
+            <div className="sidebar-section">
+              <h3 className="font-bold text-sm uppercase tracking-widest border-b-2 pb-1 mb-4" style={{ borderColor: currentTheme.primary }}>Contact</h3>
+              <ul className="space-y-4">
+                <li className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase opacity-50">Phone:</span>
+                  <p className="text-xs font-medium">{data.personal.phone}</p>
+                </li>
+                <li className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase opacity-50">Email:</span>
+                  <p className="text-xs font-medium">{data.personal.email}</p>
+                </li>
+                <li className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase opacity-50">Address:</span>
+                  <p className="text-xs font-medium">{data.personal.address}</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column */}
+      <div className="flex-1 bg-white p-12 space-y-12">
+        <section>
+          <div className="relative -ml-16 mb-8 w-fit">
+            <div className="text-white px-10 py-3 font-bold text-2xl uppercase tracking-wider relative z-10" style={{ backgroundColor: currentTheme.primary }}>
+              Education
+            </div>
+            <div className="absolute -bottom-2 left-0 w-4 h-4 rotate-45 z-0" style={{ backgroundColor: currentTheme.secondary }}></div>
+          </div>
+          <div className="space-y-6">
+            {data.education.map((edu, i) => (
+              <div key={i} className="space-y-1">
+                <h4 className="font-bold text-stone-800">{edu.school}</h4>
+                <p className="text-xs font-medium opacity-60">{edu.year}</p>
+                <p className="text-sm text-stone-600">{edu.degree}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <div className="relative -ml-16 mb-8 w-fit">
+            <div className="text-white px-10 py-3 font-bold text-2xl uppercase tracking-wider relative z-10" style={{ backgroundColor: currentTheme.primary }}>
+              Work Experience
+            </div>
+            <div className="absolute -bottom-2 left-0 w-4 h-4 rotate-45 z-0" style={{ backgroundColor: currentTheme.secondary }}></div>
+          </div>
+          <div className="space-y-8">
+            {data.experience.map((exp, i) => (
+              <div key={i} className="space-y-2">
+                <h4 className="font-bold text-stone-800">{exp.company} - {exp.role}</h4>
+                <p className="text-xs font-medium opacity-60">{exp.year}</p>
+                <p className="text-sm text-stone-600 leading-relaxed">{exp.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <div className="relative -ml-16 mb-8 w-fit">
+            <div className="text-white px-10 py-3 font-bold text-2xl uppercase tracking-wider relative z-10" style={{ backgroundColor: currentTheme.primary }}>
+              Skills
+            </div>
+            <div className="absolute -bottom-2 left-0 w-4 h-4 rotate-45 z-0" style={{ backgroundColor: currentTheme.secondary }}></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {data.skills.map((skill, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <CheckCircle size={14} style={{ color: currentTheme.primary }} />
+                <span className="text-sm font-medium text-stone-700">{skill.name}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function NavySidebarLayout({ data, currentTheme }: { data: CVData, currentTheme: Theme }) {
+  return (
+    <div className="flex flex-1">
+      {/* Dark Sidebar */}
+      <div className="w-[35%] flex flex-col text-white" style={{ backgroundColor: currentTheme.primary }}>
+        <div className="p-10 flex flex-col items-center">
+          <div className="w-32 h-32 rounded-full border-4 border-white/20 overflow-hidden mb-8">
+            {data.personal.photo ? (
+              <img src={data.personal.photo} alt={data.personal.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                <User size={48} className="text-white/30" />
+              </div>
+            )}
+          </div>
+
+          <div className="w-full space-y-12">
+            <div className="sidebar-section">
+              <h3 className="font-bold text-sm uppercase tracking-widest border-b border-white/20 pb-2 mb-6">Contact</h3>
+              <ul className="space-y-6">
+                <li className="flex items-center gap-4">
+                  <Phone size={16} className="text-white/60" />
+                  <span className="text-xs">{data.personal.phone}</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <Mail size={16} className="text-white/60" />
+                  <span className="text-xs truncate">{data.personal.email}</span>
+                </li>
+                <li className="flex items-start gap-4">
+                  <MapPin size={16} className="text-white/60 mt-0.5" />
+                  <span className="text-xs leading-relaxed">{data.personal.address}</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="sidebar-section">
+              <h3 className="font-bold text-sm uppercase tracking-widest border-b border-white/20 pb-2 mb-6">Education</h3>
+              <div className="space-y-6">
+                {data.education.map((edu, i) => (
+                  <div key={i} className="space-y-1">
+                    <p className="text-xs font-bold">{edu.year}</p>
+                    <p className="text-[10px] uppercase tracking-wider font-bold opacity-80">{edu.school}</p>
+                    <p className="text-xs opacity-60">{edu.degree}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="sidebar-section">
+              <h3 className="font-bold text-sm uppercase tracking-widest border-b border-white/20 pb-2 mb-6">Skills</h3>
+              <ul className="space-y-3">
+                {data.skills.map((skill, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+                    <span className="text-xs">{skill.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 p-16 bg-white space-y-16">
+        <header className="space-y-2">
+          <h1 className="text-5xl font-bold tracking-tight text-stone-800 uppercase">
+            {data.personal.name}
+          </h1>
+          <p className="text-xl tracking-[0.2em] text-stone-500 uppercase font-medium" style={{ color: currentTheme.primary }}>Professional Resume</p>
+        </header>
+
+        <section className="space-y-6">
+          <h3 className="text-lg font-bold uppercase tracking-widest border-b-2 border-stone-100 pb-2" style={{ color: currentTheme.primary }}>Profile</h3>
+          <p className="text-sm text-stone-600 leading-relaxed">{data.profile}</p>
+        </section>
+
+        <section className="space-y-8">
+          <h3 className="text-lg font-bold uppercase tracking-widest border-b-2 border-stone-100 pb-2" style={{ color: currentTheme.primary }}>Work Experience</h3>
+          <div className="space-y-10 relative">
+            <div className="absolute left-0 top-2 bottom-0 w-0.5 bg-stone-100"></div>
+            {data.experience.map((exp, i) => (
+              <div key={i} className="pl-8 relative">
+                <div className="absolute left-[-4px] top-2 w-2.5 h-2.5 rounded-full border-2 border-white" style={{ backgroundColor: currentTheme.primary }}></div>
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className="font-bold text-stone-800">{exp.company}</h4>
+                    <p className="text-sm text-stone-500 font-medium">{exp.role}</p>
+                  </div>
+                  <span className="text-xs font-bold text-stone-400 uppercase">{exp.year}</span>
+                </div>
+                <p className="text-sm text-stone-600 leading-relaxed">{exp.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {data.references.length > 0 && (
+          <section className="space-y-6">
+            <h3 className="text-lg font-bold uppercase tracking-widest border-b-2 border-stone-100 pb-2" style={{ color: currentTheme.primary }}>Reference</h3>
+            <div className="grid grid-cols-2 gap-10">
+              {data.references.map((ref, i) => (
+                <div key={i} className="space-y-1">
+                  <h4 className="font-bold text-stone-800">{ref.name}</h4>
+                  <p className="text-xs text-stone-500">{ref.position}</p>
+                  <p className="text-xs text-stone-400 italic">{ref.contact}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CleanWhiteLayout({ data, currentTheme }: { data: CVData, currentTheme: Theme }) {
+  return (
+    <div className="flex flex-col flex-1 bg-white p-16 space-y-12">
+      <header className="text-center space-y-4">
+        <h1 className="text-5xl font-bold tracking-tight text-stone-900 uppercase">{data.personal.name}</h1>
+        <p className="text-sm font-medium text-stone-500 tracking-widest uppercase">Masters-Qualified Pharmacist</p>
+      </header>
+
+      <div className="grid grid-cols-1 gap-12">
+        <section className="space-y-4">
+          <h3 className="text-sm font-bold uppercase tracking-widest bg-teal-600 text-white px-4 py-2 inline-block" style={{ backgroundColor: currentTheme.primary }}>Personal details</h3>
+          <div className="grid grid-cols-2 gap-x-12 gap-y-4 text-sm border-2 p-6" style={{ borderColor: currentTheme.primary }}>
+            <div className="flex justify-between border-b border-stone-100 pb-2">
+              <span className="font-bold text-stone-500">Email address</span>
+              <span>{data.personal.email}</span>
+            </div>
+            <div className="flex justify-between border-b border-stone-100 pb-2">
+              <span className="font-bold text-stone-500">Phone number</span>
+              <span>{data.personal.phone}</span>
+            </div>
+            <div className="flex justify-between border-b border-stone-100 pb-2">
+              <span className="font-bold text-stone-500">Address</span>
+              <span>{data.personal.address}</span>
+            </div>
+            <div className="flex justify-between border-b border-stone-100 pb-2">
+              <span className="font-bold text-stone-500">LinkedIn</span>
+              <span>{data.personal.linkedin}</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h3 className="text-sm font-bold uppercase tracking-widest bg-teal-600 text-white px-4 py-2 inline-block" style={{ backgroundColor: currentTheme.primary }}>Profile</h3>
+          <p className="text-sm text-stone-600 leading-relaxed border-2 p-6" style={{ borderColor: currentTheme.primary }}>{data.profile}</p>
+        </section>
+
+        <section className="space-y-4">
+          <h3 className="text-sm font-bold uppercase tracking-widest bg-teal-600 text-white px-4 py-2 inline-block" style={{ backgroundColor: currentTheme.primary }}>Employment</h3>
+          <div className="space-y-6 border-2 p-6" style={{ borderColor: currentTheme.primary }}>
+            {data.experience.map((exp, i) => (
+              <div key={i} className="space-y-2">
+                <div className="flex justify-between items-baseline">
+                  <h4 className="font-bold text-lg">{exp.role}</h4>
+                  <span className="text-xs font-bold text-stone-400">{exp.year}</span>
+                </div>
+                <p className="text-sm font-bold text-teal-600" style={{ color: currentTheme.primary }}>{exp.company}</p>
+                <p className="text-sm text-stone-600 leading-relaxed">{exp.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+function TimelineCenteredLayout({ data, currentTheme }: { data: CVData, currentTheme: Theme }) {
+  return (
+    <div className="flex flex-col flex-1 bg-white p-16 space-y-12">
+      <header className="flex flex-col items-center text-center space-y-6">
+        <h1 className="text-6xl font-bold tracking-tighter text-stone-900">Curriculum vitae</h1>
+        <div className="w-full h-0.5 bg-stone-200"></div>
+      </header>
+
+      <div className="max-w-4xl mx-auto w-full space-y-12">
+        <section className="space-y-4">
+          <h3 className="text-lg font-bold uppercase tracking-widest text-stone-900">Personal details</h3>
+          <div className="grid grid-cols-1 gap-2 text-sm">
+            <div className="flex gap-12">
+              <span className="w-32 font-bold text-stone-500">Name</span>
+              <span>{data.personal.name}</span>
+            </div>
+            <div className="flex gap-12">
+              <span className="w-32 font-bold text-stone-500">Email address</span>
+              <span>{data.personal.email}</span>
+            </div>
+            <div className="flex gap-12">
+              <span className="w-32 font-bold text-stone-500">Phone number</span>
+              <span>{data.personal.phone}</span>
+            </div>
+            <div className="flex gap-12">
+              <span className="w-32 font-bold text-stone-500">Address</span>
+              <span>{data.personal.address}</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h3 className="text-lg font-bold uppercase tracking-widest text-stone-900">Profile</h3>
+          <p className="text-sm text-stone-600 leading-relaxed">{data.profile}</p>
+        </section>
+
+        <section className="space-y-8">
+          <h3 className="text-lg font-bold uppercase tracking-widest text-stone-900">Employment</h3>
+          <div className="space-y-8">
+            {data.experience.map((exp, i) => (
+              <div key={i} className="grid grid-cols-12 gap-8">
+                <div className="col-span-3 text-sm font-bold text-stone-400 uppercase tracking-widest">{exp.year}</div>
+                <div className="col-span-9 space-y-2">
+                  <h4 className="text-lg font-bold text-stone-800">{exp.role}</h4>
+                  <p className="text-sm font-bold text-stone-500">{exp.company}</p>
+                  <p className="text-sm text-stone-600 leading-relaxed">{exp.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-8">
+          <h3 className="text-lg font-bold uppercase tracking-widest text-stone-900">Education</h3>
+          <div className="space-y-8">
+            {data.education.map((edu, i) => (
+              <div key={i} className="grid grid-cols-12 gap-8">
+                <div className="col-span-3 text-sm font-bold text-stone-400 uppercase tracking-widest">{edu.year}</div>
+                <div className="col-span-9">
+                  <h4 className="text-lg font-bold text-stone-800">{edu.degree}</h4>
+                  <p className="text-sm font-bold text-stone-500">{edu.school}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   const [data, setData] = useState<CVData>(initialData);
   const [activeTab, setActiveTab] = useState<'editor' | 'preview'>('editor');
   const [currentTheme, setCurrentTheme] = useState<Theme>(themes[0]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const previewRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = async () => {
     const element = document.getElementById('cv-preview-content');
@@ -352,7 +799,7 @@ export default function App() {
     }));
   };
 
-  const addListItem = (list: 'education' | 'experience' | 'references' | 'certificates' | 'skills' | 'qualities' | 'hobbies', item?: any) => {
+  const addListItem = (list: 'education' | 'experience' | 'references' | 'certificates' | 'skills' | 'qualities' | 'hobbies' | 'languages', item?: any) => {
     setData(prev => {
       const newList = [...(prev[list] as any[])];
       if (typeof item === 'string' || !item) {
@@ -364,7 +811,7 @@ export default function App() {
     });
   };
 
-  const removeListItem = (list: 'education' | 'experience' | 'references' | 'certificates' | 'skills' | 'qualities' | 'hobbies', index: number) => {
+  const removeListItem = (list: 'education' | 'experience' | 'references' | 'certificates' | 'skills' | 'qualities' | 'hobbies' | 'languages', index: number) => {
     setData(prev => {
       const newList = [...(prev[list] as any[])];
       newList.splice(index, 1);
@@ -372,7 +819,7 @@ export default function App() {
     });
   };
 
-  const updateListItem = (list: 'education' | 'experience' | 'references' | 'certificates' | 'skills' | 'qualities' | 'hobbies', index: number, value: any) => {
+  const updateListItem = (list: 'education' | 'experience' | 'references' | 'certificates' | 'skills' | 'qualities' | 'hobbies' | 'languages', index: number, value: any) => {
     setData(prev => {
       const newList = [...(prev[list] as any[])];
       newList[index] = value;
@@ -380,17 +827,218 @@ export default function App() {
     });
   };
 
+  if (showLanding) {
+    return (
+      <div className="min-h-screen bg-stone-50 flex flex-col">
+        {/* Header */}
+        <div className="bg-white border-b border-stone-200 py-6 px-8 flex items-center justify-center sticky top-0 z-50">
+          <button 
+            onClick={() => setShowLanding(false)}
+            className="bg-indigo-700 text-white px-10 py-3 rounded-xl font-bold text-lg shadow-lg hover:bg-indigo-800 transition-all active:scale-95 flex items-center gap-3"
+          >
+            <Plus size={24} />
+            Create CV
+          </button>
+        </div>
+
+        {/* Template Gallery */}
+        <div className="flex-1 flex flex-col items-center justify-center p-8 md:p-16">
+          <div className="max-w-7xl w-full">
+            <div className="flex items-center justify-between mb-12">
+              <div>
+                <h1 className="text-4xl font-black text-stone-900 mb-2">Choose a Template</h1>
+                <p className="text-stone-500">Select a professional design to start building your CV</p>
+              </div>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => scrollRef.current?.scrollBy({ left: -400, behavior: 'smooth' })}
+                  className="p-3 bg-white border border-stone-200 rounded-full shadow-sm hover:bg-stone-50 transition-colors"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button 
+                  onClick={() => scrollRef.current?.scrollBy({ left: 400, behavior: 'smooth' })}
+                  className="p-3 bg-white border border-stone-200 rounded-full shadow-sm hover:bg-stone-50 transition-colors"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
+            </div>
+
+            <div 
+              ref={scrollRef}
+              className="flex gap-8 overflow-x-auto pb-12 snap-x no-scrollbar"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {themes.map((theme) => (
+                <motion.div 
+                  key={theme.id}
+                  whileHover={{ y: -10 }}
+                  className="flex-shrink-0 w-[300px] md:w-[400px] snap-start"
+                >
+                  <div 
+                    onClick={() => {
+                      setCurrentTheme(theme);
+                      setShowLanding(false);
+                    }}
+                    className={`group relative bg-white rounded-2xl shadow-xl overflow-hidden cursor-pointer border-4 transition-all ${currentTheme.id === theme.id ? 'border-indigo-500' : 'border-transparent hover:border-indigo-200'}`}
+                  >
+                    {/* Visual Preview Mockup */}
+                    <div className="aspect-[1/1.414] bg-stone-100 p-4 relative overflow-hidden">
+                      {/* Miniature CV Layout Representation */}
+                      <div className="w-full h-full bg-white shadow-sm flex flex-col overflow-hidden">
+                        {theme.id === 'betcy-rickz' ? (
+                          <div className="flex flex-col h-full">
+                            <div className="h-3 bg-stone-50 flex items-center justify-center border-b border-stone-100">
+                              <div className="h-0.5 w-1/4 bg-stone-300"></div>
+                            </div>
+                            <div className="flex flex-1">
+                              <div className="w-[35%] bg-stone-50 flex flex-col">
+                                <div className="h-10 w-full" style={{ backgroundColor: theme.primary }}></div>
+                                <div className="p-2 space-y-2">
+                                  <div className="h-0.5 w-full bg-stone-200"></div>
+                                  <div className="space-y-1">
+                                    <div className="h-1 w-full bg-stone-100"></div>
+                                    <div className="h-1 w-full bg-stone-100"></div>
+                                    <div className="h-1 w-2/3 bg-stone-100"></div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex-1 p-3 space-y-3">
+                                <div className="h-2 w-1/3 bg-stone-200 border-b border-stone-100"></div>
+                                <div className="space-y-1">
+                                  <div className="h-1 w-full bg-stone-100"></div>
+                                  <div className="h-1 w-full bg-stone-100"></div>
+                                </div>
+                                <div className="h-2 w-1/3 bg-stone-200 border-b border-stone-100"></div>
+                                <div className="space-y-1">
+                                  <div className="h-1 w-full bg-stone-100"></div>
+                                  <div className="h-1 w-full bg-stone-100"></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : theme.id === 'sam-hill' ? (
+                          <div className="p-4 space-y-4">
+                            <div className="h-3 bg-stone-50 flex items-center justify-center -m-4 mb-4 border-b border-stone-100">
+                              <div className="h-0.5 w-1/4 bg-stone-300"></div>
+                            </div>
+                            <div className="space-y-2">
+                              <div className="h-8 w-3/4 bg-stone-900"></div>
+                              <div className="h-2 w-full bg-stone-200"></div>
+                              <div className="h-0.5 w-full bg-stone-900"></div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <div className="h-3 w-full bg-stone-800"></div>
+                                <div className="h-1 w-full bg-stone-100"></div>
+                                <div className="h-1 w-full bg-stone-100"></div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="h-3 w-full bg-stone-200"></div>
+                                <div className="h-1 w-full bg-stone-100"></div>
+                                <div className="h-1 w-full bg-stone-100"></div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : theme.id === 'peter-madison' ? (
+                          <div className="p-4 space-y-4 flex flex-col items-center">
+                            <div className="h-3 bg-stone-50 flex items-center justify-center -m-4 mb-4 w-[calc(100%+2rem)] border-b border-stone-100">
+                              <div className="h-0.5 w-1/4 bg-stone-300"></div>
+                            </div>
+                            <div className="h-6 w-1/2 bg-stone-800"></div>
+                            <div className="h-2 w-1/3 bg-stone-300"></div>
+                            <div className="w-full space-y-3 mt-4">
+                              <div className="h-4 w-1/3" style={{ backgroundColor: theme.primary }}></div>
+                              <div className="h-10 w-full border border-stone-200"></div>
+                              <div className="h-4 w-1/3" style={{ backgroundColor: theme.primary }}></div>
+                              <div className="h-10 w-full border border-stone-200"></div>
+                            </div>
+                          </div>
+                        ) : theme.id === 'joanna-brown' ? (
+                          <div className="flex h-full">
+                            <div className="w-1/3 h-full flex flex-col items-center p-2 space-y-4" style={{ backgroundColor: theme.accent }}>
+                              <div className="w-12 h-12 rotate-45 border-2 border-stone-300 bg-white"></div>
+                              <div className="h-2 w-full bg-stone-300"></div>
+                              <div className="space-y-1 w-full">
+                                <div className="h-1 w-full bg-stone-200"></div>
+                                <div className="h-1 w-full bg-stone-200"></div>
+                              </div>
+                            </div>
+                            <div className="flex-1 p-4 space-y-6">
+                              <div className="flex items-center gap-2">
+                                <div className="h-4 w-1/2" style={{ backgroundColor: theme.primary }}></div>
+                                <div className="h-0.5 flex-1 bg-stone-200"></div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="h-2 w-3/4 bg-stone-200"></div>
+                                <div className="h-1 w-full bg-stone-100"></div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="h-4 w-1/2" style={{ backgroundColor: theme.primary }}></div>
+                                <div className="h-0.5 flex-1 bg-stone-200"></div>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="h-2 w-3/4 bg-stone-200"></div>
+                                <div className="h-1 w-full bg-stone-100"></div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="p-4 space-y-4">
+                            <div className="h-10 w-2/3 bg-stone-900"></div>
+                            <div className="h-0.5 w-full bg-stone-900"></div>
+                            <div className="h-4 w-1/2 bg-stone-200"></div>
+                            <div className="h-2 w-full bg-stone-100"></div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Overlay on hover */}
+                      <div className="absolute inset-0 bg-indigo-900/0 group-hover:bg-indigo-900/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <span className="bg-white text-indigo-700 px-6 py-2 rounded-full font-bold shadow-lg">Use Template</span>
+                      </div>
+                    </div>
+                    
+                    <div className="p-6">
+                      <h3 className="font-bold text-xl text-stone-800">{theme.name}</h3>
+                      <p className="text-stone-500 text-sm">{theme.layout?.replace('-', ' ') || 'Classic'} Layout</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="py-8 text-center text-stone-400 text-sm">
+          © 2026 Mekim CV • Professional Resume Builder
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-stone-100 text-stone-900 font-sans selection:bg-olive-200">
+    <div className="min-h-screen bg-stone-50 flex flex-col font-sans selection:bg-indigo-100 selection:text-indigo-900">
       {/* Header - Hidden on Print */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-stone-200 px-6 py-4 flex items-center justify-between print:hidden">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-olive-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-olive-700/20">
-            <FileText size={24} />
-          </div>
-          <div>
-            <h1 className="font-bold text-lg tracking-tight">Modern CV Maker</h1>
-            <p className="text-xs text-stone-500 font-medium">Create your professional resume in minutes</p>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setShowLanding(true)}
+            className="p-2 hover:bg-stone-100 rounded-xl transition-colors text-stone-500"
+            title="Back to templates"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-indigo-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-700/20">
+              <FileText size={24} />
+            </div>
+            <div>
+              <h1 className="font-bold text-lg tracking-tight">Mekim CV</h1>
+              <p className="text-xs text-stone-500 font-medium">Professional Resume Builder</p>
+            </div>
           </div>
         </div>
 
@@ -449,22 +1097,29 @@ export default function App() {
         {/* Editor Section */}
         <section className={`lg:col-span-5 space-y-8 print:hidden ${activeTab === 'preview' ? 'hidden lg:block' : ''}`}>
           
-          {/* Theme Selector Mobile */}
-          <div className="lg:hidden bg-white rounded-3xl p-6 shadow-sm border border-stone-200">
-            <div className="flex items-center gap-3 mb-4">
-              <Palette className="text-stone-500" size={20} />
-              <h2 className="font-bold text-lg">Select Theme</h2>
+          {/* Theme Selector */}
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-stone-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Palette className="text-stone-500" size={20} />
+                <h2 className="font-bold text-lg">Select Theme</h2>
+              </div>
+              <button 
+                onClick={() => setShowLanding(true)}
+                className="text-xs font-bold text-indigo-600 hover:underline"
+              >
+                Change Template
+              </button>
             </div>
-            <div className="flex gap-4">
+            <div className="grid grid-cols-5 gap-2">
               {themes.map(t => (
                 <button
                   key={t.id}
                   onClick={() => setCurrentTheme(t)}
-                  className={`flex-1 py-3 rounded-xl text-xs font-bold transition-all border-2 ${currentTheme.id === t.id ? 'border-stone-900 bg-stone-50' : 'border-transparent bg-stone-100 text-stone-500'}`}
-                  style={{ color: currentTheme.id === t.id ? t.primary : undefined }}
-                >
-                  {t.name.split(' ')[1]}
-                </button>
+                  className={`w-full aspect-square rounded-xl transition-all border-2 ${currentTheme.id === t.id ? 'border-indigo-500 scale-110 shadow-md' : 'border-transparent hover:border-stone-200'}`}
+                  style={{ backgroundColor: t.primary }}
+                  title={t.name}
+                />
               ))}
             </div>
           </div>
@@ -477,6 +1132,7 @@ export default function App() {
             </div>
             <div className="grid grid-cols-1 gap-4">
               <InputField label="Full Name" value={data.personal.name} onChange={(v) => updatePersonal('name', v)} />
+              <InputField label="Photo URL" value={data.personal.photo || ""} onChange={(v) => updatePersonal('photo', v)} />
               <InputField label="Email" value={data.personal.email} onChange={(v) => updatePersonal('email', v)} />
               <InputField label="Phone" value={data.personal.phone} onChange={(v) => updatePersonal('phone', v)} />
               <InputField label="Address" value={data.personal.address} onChange={(v) => updatePersonal('address', v)} />
@@ -534,9 +1190,43 @@ export default function App() {
             )}
           />
 
-          {/* Skills, Qualities, Hobbies, Certificates */}
+          {/* Skills, Qualities, Hobbies, Certificates, Languages */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SimpleListSection title="Skills" items={data.skills} onAdd={() => addListItem('skills')} onRemove={(i) => removeListItem('skills', i)} onUpdate={(i, v) => updateListItem('skills', i, v)} />
+            <ListSection 
+              title="Skills" 
+              icon={<Award size={20} />} 
+              items={data.skills}
+              onAdd={() => addListItem('skills', { name: '', level: 80 })}
+              onRemove={(i) => removeListItem('skills', i)}
+              renderItem={(item, i) => (
+                <div className="space-y-3 p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                  <InputField label="Skill Name" value={item.name} onChange={(v) => updateListItem('skills', i, { ...item, name: v })} />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-stone-500 uppercase tracking-wider ml-1">Level ({item.level}%)</label>
+                    <input 
+                      type="range" 
+                      min="0" max="100" 
+                      value={item.level} 
+                      onChange={(e) => updateListItem('skills', i, { ...item, level: parseInt(e.target.value) })}
+                      className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-olive-700"
+                    />
+                  </div>
+                </div>
+              )}
+            />
+            <ListSection 
+              title="Languages" 
+              icon={<Globe size={20} />} 
+              items={data.languages}
+              onAdd={() => addListItem('languages', { name: '', level: 'Fluent' })}
+              onRemove={(i) => removeListItem('languages', i)}
+              renderItem={(item, i) => (
+                <div className="space-y-3 p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                  <InputField label="Language" value={item.name} onChange={(v) => updateListItem('languages', i, { ...item, name: v })} />
+                  <InputField label="Level (e.g. Fluent, Native)" value={item.level} onChange={(v) => updateListItem('languages', i, { ...item, level: v })} />
+                </div>
+              )}
+            />
             <SimpleListSection title="Qualities" items={data.qualities} onAdd={() => addListItem('qualities')} onRemove={(i) => removeListItem('qualities', i)} onUpdate={(i, v) => updateListItem('qualities', i, v)} />
             <SimpleListSection title="Hobbies" items={data.hobbies} onAdd={() => addListItem('hobbies')} onRemove={(i) => removeListItem('hobbies', i)} onUpdate={(i, v) => updateListItem('hobbies', i, v)} />
             <SimpleListSection title="Certificates" items={data.certificates} onAdd={() => addListItem('certificates')} onRemove={(i) => removeListItem('certificates', i)} onUpdate={(i, v) => updateListItem('certificates', i, v)} />
@@ -578,209 +1268,47 @@ export default function App() {
               id="cv-preview"
             >
               <div id="cv-preview-content" className="flex flex-col flex-1 min-h-[297mm]">
+                <style>{`
+                  #cv-preview-content section {
+                    break-inside: avoid !important;
+                    page-break-inside: avoid !important;
+                    margin-bottom: 2.5rem;
+                    display: block;
+                    width: 100%;
+                  }
+                  #cv-preview-content h3 {
+                    break-after: avoid !important;
+                    page-break-after: avoid !important;
+                    margin-bottom: 1rem;
+                  }
+                  #cv-preview-content li, #cv-preview-content .flex {
+                    break-inside: avoid !important;
+                    page-break-inside: avoid !important;
+                  }
+                  /* Ensure sidebar sections also don't break */
+                  #cv-preview-content .sidebar-section {
+                    break-inside: avoid !important;
+                    page-break-inside: avoid !important;
+                    margin-bottom: 2rem;
+                  }
+                `}</style>
                 {/* Header with Title */}
                 <div className="py-2 text-center border-b border-stone-100" style={{ backgroundColor: currentTheme.sidebarBg }}>
                   <span className="text-[10px] font-bold tracking-[0.5em] uppercase opacity-50" style={{ color: currentTheme.primary }}>RESUME(CV)</span>
                 </div>
 
                 <div className="flex flex-1">
-                  {/* Left Sidebar */}
-                  <div className="w-[35%] border-r border-stone-100 flex flex-col" style={{ backgroundColor: currentTheme.sidebarBg }}>
-                    {/* Name Banner */}
-                    <div className="p-8 pt-12 text-center relative overflow-hidden" style={{ backgroundColor: currentTheme.primary, color: 'white' }}>
-                      <div className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ opacity: 0.1 }}>
-                        <div className="absolute -top-10 -left-10 w-40 h-40 bg-white rounded-full blur-3xl"></div>
-                      </div>
-                      <h2 className="font-bold text-2xl tracking-wider uppercase relative z-10">{data.personal.name || "YOUR NAME"}</h2>
-                      <div className="w-12 h-1 mx-auto mt-4 rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)' }}></div>
-                    </div>
-
-                    <div className="p-6 space-y-10">
-                      {/* Personal Details */}
-                      <div className="sidebar-section">
-                        <h3 className="font-bold text-lg mb-6 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Personal details</h3>
-                        <ul className="space-y-5">
-                          <SidebarItem icon={<User size={14} />} text={data.personal.name} theme={currentTheme} />
-                          <SidebarItem icon={<Mail size={14} />} text={data.personal.email} theme={currentTheme} />
-                          <SidebarItem icon={<Phone size={14} />} text={data.personal.phone} theme={currentTheme} />
-                          <SidebarItem icon={<MapPin size={14} />} text={data.personal.address} theme={currentTheme} />
-                          <SidebarItem icon={<Calendar size={14} />} text={data.personal.dob} theme={currentTheme} />
-                          <SidebarItem icon={<MapPin size={14} />} text={data.personal.location} theme={currentTheme} />
-                          <SidebarItem icon={<User size={14} />} text={data.personal.gender} theme={currentTheme} />
-                          <SidebarItem icon={<Linkedin size={14} />} text={data.personal.linkedin} theme={currentTheme} />
-                        </ul>
-                      </div>
-
-                      {/* Qualities */}
-                      {data.qualities.length > 0 && (
-                        <div className="sidebar-section">
-                          <h3 className="font-bold text-lg mb-6 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Qualities</h3>
-                          <ul className="space-y-3">
-                            {data.qualities.map((q, i) => (
-                              <li key={i} className="flex items-start gap-3 text-sm text-stone-700">
-                                <div className="w-2 h-2 mt-1.5 shrink-0" style={{ backgroundColor: currentTheme.primary }}></div>
-                                <span>{q}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-
-                      {/* Hobbies */}
-                      {data.hobbies.length > 0 && (
-                        <div className="sidebar-section">
-                          <h3 className="font-bold text-lg mb-6 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Hobbies</h3>
-                          <ul className="space-y-3">
-                            {data.hobbies.map((h, i) => (
-                              <li key={i} className="flex items-start gap-3 text-sm text-stone-700">
-                                <div className="w-2 h-2 mt-1.5 shrink-0" style={{ backgroundColor: currentTheme.primary }}></div>
-                                <span>{h}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Bottom Decoration */}
-                    <div className="mt-auto p-8" style={{ opacity: 0.2 }}>
-                      <div className="w-full h-24 rounded-t-[100px]" style={{ backgroundColor: currentTheme.secondary }}></div>
-                    </div>
-                  </div>
-
-                  {/* Main Content */}
-                  <div className="flex-1 p-10 space-y-12" style={{ color: currentTheme.textMain }}>
-                    <style>{`
-                      #cv-preview-content section {
-                        break-inside: avoid !important;
-                        page-break-inside: avoid !important;
-                        margin-bottom: 2.5rem;
-                        display: block;
-                        width: 100%;
-                      }
-                      #cv-preview-content h3 {
-                        break-after: avoid !important;
-                        page-break-after: avoid !important;
-                        margin-bottom: 1rem;
-                      }
-                      #cv-preview-content li, #cv-preview-content .flex {
-                        break-inside: avoid !important;
-                        page-break-inside: avoid !important;
-                      }
-                      /* Ensure sidebar sections also don't break */
-                      #cv-preview-content .sidebar-section {
-                        break-inside: avoid !important;
-                        page-break-inside: avoid !important;
-                        margin-bottom: 2rem;
-                      }
-                    `}</style>
-                    {/* Profile */}
-                    <section>
-                      <h3 className="font-medium text-2xl mb-4 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Profile</h3>
-                      <p className="text-sm leading-relaxed">{data.profile}</p>
-                    </section>
-
-                    {/* Career Goals */}
-                    {data.goals && (
-                      <section>
-                        <h3 className="font-medium text-2xl mb-4 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Career Goals</h3>
-                        <p className="text-sm leading-relaxed">{data.goals}</p>
-                      </section>
-                    )}
-
-                    {/* Education */}
-                    <section>
-                      <h3 className="font-medium text-2xl mb-6 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Education</h3>
-                      <div className="space-y-6">
-                        {data.education.map((edu, i) => (
-                          <div key={i} className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-bold text-stone-800 text-sm">{edu.degree}</h4>
-                              <p className="text-stone-400 text-xs mt-1 italic">{edu.school}</p>
-                            </div>
-                            <span className="text-stone-800 font-bold text-xs">{edu.year}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-
-                    {/* Experience */}
-                    {data.experience.length > 0 && (
-                      <section>
-                        <h3 className="font-medium text-2xl mb-6 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Work Experience</h3>
-                        <div className="space-y-8">
-                          {data.experience.map((exp, i) => (
-                            <div key={i} className="flex justify-between items-start">
-                              <div className="flex-1">
-                                <h4 className="font-bold text-stone-800 text-sm">{exp.role}</h4>
-                                <p className="text-stone-400 text-xs mt-1 italic">{exp.company}</p>
-                                <p className="text-stone-600 text-xs mt-3 leading-relaxed">{exp.description}</p>
-                              </div>
-                              <span className="text-stone-800 font-bold text-xs ml-4 shrink-0">{exp.year}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </section>
-                    )}
-
-                    {/* Certificates */}
-                    {data.certificates.length > 0 && (
-                      <section>
-                        <h3 className="font-medium text-2xl mb-6 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Certificates</h3>
-                        <ul className="space-y-3">
-                          {data.certificates.map((cert, i) => (
-                            <li key={i} className="text-stone-800 font-bold text-sm">{cert}</li>
-                          ))}
-                        </ul>
-                      </section>
-                    )}
-
-                    {/* Skills */}
-                    {data.skills.length > 0 && (
-                      <section>
-                        <h3 className="font-medium text-2xl mb-6 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Skills</h3>
-                        <ul className="space-y-4">
-                          {data.skills.map((skill, i) => (
-                            <li key={i} className="text-stone-800 font-bold text-sm">{skill}</li>
-                          ))}
-                        </ul>
-                      </section>
-                    )}
-
-                    {/* References */}
-                    {data.references.length > 0 && (
-                      <section>
-                        <h3 className="font-medium text-2xl mb-6 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Reference</h3>
-                        <div className="space-y-6">
-                          {data.references.map((ref, i) => (
-                            <div key={i}>
-                              <h4 className="font-bold text-stone-800 text-sm">{ref.name}</h4>
-                              <p className="text-stone-500 text-xs mt-1">{ref.position}</p>
-                              <p className="text-stone-400 text-xs mt-1 italic">{ref.contact}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </section>
-                    )}
-
-                    {/* Declaration */}
-                    {data.declaration && (
-                      <section className="pt-4">
-                        <h3 className="font-medium text-2xl mb-4 border-b pb-2" style={{ color: currentTheme.primary, borderColor: currentTheme.accent }}>Declaration</h3>
-                        <p className="text-stone-600 text-xs italic leading-relaxed">{data.declaration}</p>
-                        <div className="mt-10 flex justify-between items-end">
-                          <div className="text-center">
-                            <div className="w-32 border-b border-stone-300 mb-2"></div>
-                            <span className="text-[10px] text-stone-400 uppercase tracking-widest">Date</span>
-                          </div>
-                          <div className="text-center">
-                            <div className="w-32 border-b border-stone-300 mb-2"></div>
-                            <span className="text-[10px] text-stone-400 uppercase tracking-widest">Signature</span>
-                          </div>
-                        </div>
-                      </section>
-                    )}
-                  </div>
+                  {currentTheme.layout === 'modern-green' ? (
+                    <ModernGreenLayout data={data} currentTheme={currentTheme} />
+                  ) : currentTheme.layout === 'clean-white' ? (
+                    <CleanWhiteLayout data={data} currentTheme={currentTheme} />
+                  ) : currentTheme.layout === 'timeline-centered' ? (
+                    <TimelineCenteredLayout data={data} currentTheme={currentTheme} />
+                  ) : currentTheme.layout === 'modern-minimal' ? (
+                    <ModernMinimalLayout data={data} currentTheme={currentTheme} />
+                  ) : (
+                    <DefaultLayout data={data} currentTheme={currentTheme} />
+                  )}
                 </div>
               </div>
             </div>
