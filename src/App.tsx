@@ -8,7 +8,7 @@ import {
   User, Mail, Phone, MapPin, Calendar, Globe, Linkedin, 
   Plus, Trash2, Download, Printer, Briefcase, GraduationCap, 
   Award, CheckCircle, Heart, Target, FileText, UserCheck,
-  ChevronLeft, ChevronRight, Palette
+  ChevronLeft, ChevronRight, Palette, Flag, PenTool, Layout
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import html2pdf from 'html2pdf.js';
@@ -24,7 +24,7 @@ interface Theme {
   sidebarBg: string;
   textMain: string;
   textSidebar: string;
-  layout?: 'default' | 'modern-green' | 'navy-sidebar' | 'clean-white' | 'timeline-centered' | 'modern-minimal';
+  layout?: 'default' | 'modern-green' | 'navy-sidebar' | 'clean-white' | 'timeline-centered' | 'modern-minimal' | 'blue-header';
 }
 
 interface Education {
@@ -90,43 +90,54 @@ interface CVData {
 
 const initialData: CVData = {
   personal: {
-    name: "BETCY RICKZ",
-    email: "brickz@gmail.com",
-    phone: "70183552",
-    address: "C-/ Kaiva Kweb, MILUM Services, PO Box 292, Tabubil",
-    dob: "June 17, 2002",
-    gender: "Female",
-    linkedin: "linkedin.com/in/betcy-rickz",
-    location: "Oksapmin",
-    photo: "https://picsum.photos/seed/betcy/200/200",
+    name: "KAIVA KWEB",
+    email: "jackaiva0224@gmail.com",
+    phone: "+67572651651",
+    address: "Tabubil, Papua New Guinea",
+    dob: "27/02/1995",
+    gender: "Male",
+    linkedin: "www.linkedin.com/in/kaivakweb",
+    location: "Tabubil",
+    photo: "https://picsum.photos/seed/kaiva/200/200",
   },
-  profile: "I am a motivated and responsible student currently working on improving academic results while preparing for further education. Seeking a part-time position where I can develop practical skills, contribute positively to a team, and gain work experience. I am known for being reliable, quick to learn, and having a strong work ethic. I can blend in any work environment.",
+  profile: "I believe in honesty, trust, transparency, and strong, productive leadership. I value professionals who lead with confidence, share knowledge, and deliver results. I am committed to working with focus, meeting deadlines, and producing quality work.",
   goals: "To secure a challenging position in a reputable organization where I can utilize my technical skills and contribute to the growth of the company while enhancing my professional knowledge.",
   education: [
-    { id: '1', school: "Telefomin Secondary School, Tabubil", degree: "Gr 12 Certificate", year: "2024 - 2025" },
-    { id: '2', school: "Oksapmin Secondary Schooool, Tabubil", degree: "Gr 10 Certifcate", year: "2022 - 2023" }
+    { id: '1', school: "University of Papua New Guinea", degree: "Bachelor's Degree of Science (Computer Science)", year: "2013-03 – 2017-07" }
   ],
   experience: [
-    { id: '1', company: "Local Community Center", role: "Volunteer Assistant", year: "2023 - Present", description: "Assisted in organizing community events and managing administrative tasks." }
+    { id: '1', company: "Wokman Teleoks Limited (OTML)", role: "ADAS Admin Officer", year: "2021-03 – present", description: "• Fleet monitoring using TrakPro ADAS system\n• Keeping records of TrakPro Alerts and Reporting of Breaches APD Security Base 1\n• Use of Access and Excel VBA to store records\n• OTML/MILUM convoy reports\n• MMR reports and updates on GLMS\n• Logistics Dashboard update in MS Teams\n• MILUM/OTML bus report reports" },
+    { id: '2', company: "Ruswin Integrated Solutions", role: "Electronics Technician", year: "2019-12 – 2021-01", description: "• Installion of Gallagher access control systems which includes device installation and software configuration\n• CCTV installations and configuration\n• Alarm systems Installation and configuration" }
   ],
-  certificates: ["Gr 12 Certificate", "Gr 10 Certifcate"],
+  certificates: [],
   skills: [
-    { id: '1', name: "Problem-solving ability", level: 85 },
-    { id: '2', name: "Team collaboration skills", level: 90 },
-    { id: '3', name: "Strong communication skills", level: 95 },
-    { id: '4', name: "Time management", level: 100 }
+    { id: '1', name: "Leadership", level: 90 },
+    { id: '2', name: "Computing", level: 95 },
+    { id: '3', name: "Public Speaking", level: 85 },
+    { id: '4', name: "Graphics and Design", level: 80 }
   ],
   languages: [
     { id: '1', name: "English", level: "Fluent" },
     { id: '2', name: "Tok Pisin", level: "Native" }
   ],
-  qualities: ["Problem-solving ability", "Team collaboration skills", "Strong communication skills", "Time management"],
-  hobbies: ["Playing soccer", "Reading books", "Cooking"],
+  qualities: ["Honesty", "Trust", "Transparency", "Productive leadership"],
+  hobbies: ["Reading", "Technology", "Community Service"],
   references: [],
   declaration: "I hereby declare that all the information provided above is true to the best of my knowledge and belief."
 };
 
 const themes: Theme[] = [
+  {
+    id: 'kaiva-kweb',
+    name: 'Blue Header',
+    primary: '#3b719f',
+    secondary: '#1e3a5f',
+    accent: '#ffffff',
+    sidebarBg: '#ffffff',
+    textMain: '#000000',
+    textSidebar: '#ffffff',
+    layout: 'blue-header'
+  },
   {
     id: 'betcy-rickz',
     name: 'Classic Sidebar',
@@ -176,6 +187,124 @@ const themes: Theme[] = [
 // --- Components ---
 
 // --- Layout Components ---
+
+function BlueHeaderLayout({ data, currentTheme }: { data: CVData, currentTheme: Theme }) {
+  return (
+    <div className="flex-1 bg-white flex flex-col">
+      {/* Blue Header */}
+      <header className="p-10 flex items-center gap-10 text-white" style={{ backgroundColor: currentTheme.primary }}>
+        <div className="relative w-40 h-40 shrink-0">
+          <div className="absolute inset-0 rounded-full border-4 border-white/30"></div>
+          <div className="absolute inset-1 rounded-full overflow-hidden bg-stone-100">
+            {data.personal.photo ? (
+              <img src={data.personal.photo} alt={data.personal.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <User size={64} className="text-stone-300" />
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="space-y-4">
+          <h1 className="text-4xl font-bold tracking-tight uppercase">{data.personal.name}</h1>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm opacity-90">
+            <div className="flex items-center gap-2"><Mail size={14} /> {data.personal.email}</div>
+            <div className="flex items-center gap-2"><Phone size={14} /> {data.personal.phone}</div>
+            <div className="flex items-center gap-2"><MapPin size={14} /> {data.personal.address}</div>
+            <div className="flex items-center gap-2"><Calendar size={14} /> {data.personal.dob}</div>
+            <div className="flex items-center gap-2"><Flag size={14} /> Papua New Guinean</div>
+            <div className="flex items-center gap-2"><User size={14} /> {data.personal.gender}</div>
+            <div className="flex items-center gap-2 col-span-2"><Linkedin size={14} /> {data.personal.linkedin}</div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="p-10 space-y-10">
+        <section className="space-y-4">
+          <div className="flex items-center gap-3 border-b-2 pb-1" style={{ borderColor: currentTheme.primary }}>
+            <PenTool size={20} style={{ color: currentTheme.primary }} />
+            <h3 className="text-xl font-bold uppercase tracking-tight" style={{ color: currentTheme.primary }}>Career Objective</h3>
+          </div>
+          <p className="text-sm text-stone-800 leading-relaxed font-medium">{data.profile}</p>
+        </section>
+
+        <section className="space-y-6">
+          <div className="flex items-center gap-3 border-b-2 pb-1" style={{ borderColor: currentTheme.primary }}>
+            <Briefcase size={20} style={{ color: currentTheme.primary }} />
+            <h3 className="text-xl font-bold uppercase tracking-tight" style={{ color: currentTheme.primary }}>Professional Experience</h3>
+          </div>
+          <div className="space-y-8">
+            {data.experience.map((exp, i) => (
+              <div key={i} className="grid grid-cols-12 gap-6">
+                <div className="col-span-3 text-sm font-medium text-stone-600">
+                  <p>{exp.year}</p>
+                  <p>{data.personal.location},</p>
+                  <p>Papua New Guinea</p>
+                </div>
+                <div className="col-span-9 space-y-1">
+                  <h4 className="font-bold text-lg">{exp.company}</h4>
+                  <p className="font-bold text-stone-700">{exp.role}</p>
+                  <p className="text-sm text-stone-600 leading-relaxed mt-2">{exp.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <div className="flex items-center gap-3 border-b-2 pb-1" style={{ borderColor: currentTheme.primary }}>
+            <GraduationCap size={20} style={{ color: currentTheme.primary }} />
+            <h3 className="text-xl font-bold uppercase tracking-tight" style={{ color: currentTheme.primary }}>Education</h3>
+          </div>
+          <div className="space-y-4">
+            {data.education.map((edu, i) => (
+              <div key={i} className="space-y-1">
+                <h4 className="font-bold text-lg">{edu.school}</h4>
+                <p className="font-bold text-stone-700">{edu.degree}</p>
+                <p className="text-sm text-stone-600">{edu.year} | Port Moresby, Papua New Guinea</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <div className="flex items-center gap-3 border-b-2 pb-1" style={{ borderColor: currentTheme.primary }}>
+            <Layout size={20} style={{ color: currentTheme.primary }} />
+            <h3 className="text-xl font-bold uppercase tracking-tight" style={{ color: currentTheme.primary }}>Skills</h3>
+          </div>
+          <div className="grid grid-cols-4 gap-6">
+            <div className="space-y-2">
+              <h4 className="font-bold border-b border-stone-200 pb-1">Leadership</h4>
+              <ul className="text-xs space-y-1 list-disc pl-4 text-stone-600">
+                <li>Leading team and working under minimal supervision</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-bold border-b border-stone-200 pb-1">Computing</h4>
+              <ul className="text-xs space-y-1 list-disc pl-4 text-stone-600">
+                <li>Advance MS Office products</li>
+                <li>Excel, Access, Word, Publisher</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-bold border-b border-stone-200 pb-1">Public Speaking</h4>
+              <ul className="text-xs space-y-1 list-disc pl-4 text-stone-600">
+                <li>Confident level of speaking and doing presentations</li>
+              </ul>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-bold border-b border-stone-200 pb-1">Design & Video</h4>
+              <ul className="text-xs space-y-1 list-disc pl-4 text-stone-600">
+                <li>Experience in following designs softwares</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
 
 function DefaultLayout({ data, currentTheme }: { data: CVData, currentTheme: Theme }) {
   return (
@@ -887,7 +1016,29 @@ export default function App() {
                     <div className="aspect-[1/1.414] bg-stone-100 p-4 relative overflow-hidden">
                       {/* Miniature CV Layout Representation */}
                       <div className="w-full h-full bg-white shadow-sm flex flex-col overflow-hidden">
-                        {theme.id === 'betcy-rickz' ? (
+                        {theme.id === 'kaiva-kweb' ? (
+                          <div className="flex flex-col h-full">
+                            <div className="h-16 w-full p-2 flex items-center gap-2" style={{ backgroundColor: theme.primary }}>
+                              <div className="w-10 h-10 rounded-full bg-white/20 border border-white/30"></div>
+                              <div className="space-y-1">
+                                <div className="h-2 w-20 bg-white/40"></div>
+                                <div className="h-1 w-32 bg-white/20"></div>
+                              </div>
+                            </div>
+                            <div className="flex-1 p-3 space-y-4">
+                              <div className="h-2 w-1/2 border-b-2" style={{ borderColor: theme.primary }}></div>
+                              <div className="space-y-1">
+                                <div className="h-1 w-full bg-stone-100"></div>
+                                <div className="h-1 w-full bg-stone-100"></div>
+                              </div>
+                              <div className="h-2 w-1/2 border-b-2" style={{ borderColor: theme.primary }}></div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="h-10 bg-stone-50"></div>
+                                <div className="h-10 bg-stone-50"></div>
+                              </div>
+                            </div>
+                          </div>
+                        ) : theme.id === 'betcy-rickz' ? (
                           <div className="flex flex-col h-full">
                             <div className="h-3 bg-stone-50 flex items-center justify-center border-b border-stone-100">
                               <div className="h-0.5 w-1/4 bg-stone-300"></div>
@@ -1306,6 +1457,8 @@ export default function App() {
                     <TimelineCenteredLayout data={data} currentTheme={currentTheme} />
                   ) : currentTheme.layout === 'modern-minimal' ? (
                     <ModernMinimalLayout data={data} currentTheme={currentTheme} />
+                  ) : currentTheme.layout === 'blue-header' ? (
+                    <BlueHeaderLayout data={data} currentTheme={currentTheme} />
                   ) : (
                     <DefaultLayout data={data} currentTheme={currentTheme} />
                   )}
