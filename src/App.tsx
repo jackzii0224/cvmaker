@@ -245,7 +245,11 @@ function BlueHeaderLayout({ data, currentTheme }: { data: CVData, currentTheme: 
                 <div className="col-span-9 space-y-1">
                   <h4 className="font-bold text-lg">{exp.company}</h4>
                   <p className="font-bold text-stone-700">{exp.role}</p>
-                  <p className="text-sm text-stone-600 leading-relaxed mt-2">{exp.description}</p>
+                  <div className="text-sm text-stone-600 leading-relaxed mt-2 space-y-1">
+                    {exp.description.split('\n').map((line, index) => (
+                      <p key={index}>{line}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}
@@ -1283,7 +1287,38 @@ export default function App() {
             </div>
             <div className="grid grid-cols-1 gap-4">
               <InputField label="Full Name" value={data.personal.name} onChange={(v) => updatePersonal('name', v)} />
-              <InputField label="Photo URL" value={data.personal.photo || ""} onChange={(v) => updatePersonal('photo', v)} />
+              <div className="space-y-2">
+                <InputField label="Photo URL" value={data.personal.photo || ""} onChange={(v) => updatePersonal('photo', v)} />
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-2 px-4 py-2 bg-stone-100 hover:bg-stone-200 rounded-xl cursor-pointer transition-colors text-sm font-medium text-stone-700">
+                    <Download size={16} className="rotate-180" />
+                    Upload Photo
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            updatePersonal('photo', reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                  {data.personal.photo && (
+                    <button 
+                      onClick={() => updatePersonal('photo', '')}
+                      className="text-xs text-red-600 hover:underline"
+                    >
+                      Remove Photo
+                    </button>
+                  )}
+                </div>
+              </div>
               <InputField label="Email" value={data.personal.email} onChange={(v) => updatePersonal('email', v)} />
               <InputField label="Phone" value={data.personal.phone} onChange={(v) => updatePersonal('phone', v)} />
               <InputField label="Address" value={data.personal.address} onChange={(v) => updatePersonal('address', v)} />
