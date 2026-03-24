@@ -899,20 +899,83 @@ export default function App() {
           useCORS: true,
           letterRendering: true,
           scrollY: 0,
-          windowWidth: document.documentElement.offsetWidth,
+          windowWidth: 794, // Standard A4 width in pixels at 96dpi
           onclone: (clonedDoc: Document) => {
             // Remove problematic decorative elements for PDF
             const blurs = clonedDoc.querySelectorAll('.blur-3xl');
             blurs.forEach(el => (el as HTMLElement).style.display = 'none');
             
-            // Fix any remaining oklch issues by forcing standard colors on key elements
+            // Fix any remaining oklch/oklab/color-mix issues by forcing standard colors
+            // html2canvas does not support modern color functions used in Tailwind v4
             const preview = clonedDoc.getElementById('cv-preview-content');
             if (preview) {
               preview.style.fontFamily = 'Arial, sans-serif';
+              
+              // Recursively find all elements and replace modern colors in their style and other attributes
+              const allElements = preview.getElementsByTagName('*');
+              for (let i = 0; i < allElements.length; i++) {
+                const el = allElements[i] as HTMLElement;
+                
+                // 1. Clean inline styles
+                const styleAttr = el.getAttribute('style');
+                if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab') || styleAttr.includes('color-mix'))) {
+                  const safeStyle = styleAttr
+                    .replace(/oklch\([^)]+\)/g, currentTheme.primary)
+                    .replace(/oklab\([^)]+\)/g, currentTheme.primary)
+                    .replace(/color-mix\([^)]+\)/g, currentTheme.primary);
+                  el.setAttribute('style', safeStyle);
+                }
+
+                // 2. Clean common color attributes for SVGs/Icons
+                ['fill', 'stroke', 'color'].forEach(attr => {
+                  const val = el.getAttribute(attr);
+                  if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('color-mix'))) {
+                    el.setAttribute(attr, currentTheme.primary);
+                  }
+                });
+              }
             }
+
+            // AGGRESSIVE FIX: Strip modern color functions from ALL style tags
+            const styleTags = clonedDoc.getElementsByTagName('style');
+            for (let i = 0; i < styleTags.length; i++) {
+              const styleTag = styleTags[i];
+              if (styleTag.innerHTML.includes('oklch') || styleTag.innerHTML.includes('oklab') || styleTag.innerHTML.includes('color-mix')) {
+                styleTag.innerHTML = styleTag.innerHTML
+                  .replace(/oklch\([^)]+\)/g, currentTheme.primary)
+                  .replace(/oklab\([^)]+\)/g, currentTheme.primary)
+                  .replace(/color-mix\([^)]+\)/g, currentTheme.primary);
+              }
+            }
+
+            // Add a style tag to the cloned document to override common Tailwind classes with safe colors
+            const style = clonedDoc.createElement('style');
+            style.innerHTML = `
+              /* Force standard colors for common Tailwind classes */
+              .bg-white { background-color: #ffffff !important; }
+              .text-stone-800 { color: #292524 !important; }
+              .text-stone-700 { color: #44403c !important; }
+              .text-stone-600 { color: #57534e !important; }
+              .text-stone-500 { color: #78716c !important; }
+              .text-stone-400 { color: #a8a29e !important; }
+              .text-stone-300 { color: #d6d3d1 !important; }
+              .border-stone-100 { border-color: #f5f5f4 !important; }
+              .border-stone-200 { border-color: #e7e5e4 !important; }
+              
+              /* Ensure the blue header layout still works if selected */
+              header { -webkit-print-color-adjust: exact; }
+              
+              /* Global fallback for any missed modern colors */
+              * { 
+                scrollbar-color: auto !important;
+                accent-color: ${currentTheme.primary} !important;
+              }
+            `;
+            clonedDoc.head.appendChild(style);
           }
         },
-        jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
+        jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
       const worker = html2pdf().set(opt).from(element);
@@ -1239,8 +1302,8 @@ export default function App() {
               </>
             ) : (
               <>
-                <Printer size={18} />
-                Print / PDF
+                <Download size={18} />
+                Export PDF
               </>
             )}
           </button>
@@ -1467,7 +1530,7 @@ export default function App() {
                     page-break-after: avoid !important;
                     margin-bottom: 1rem;
                   }
-                  #cv-preview-content li, #cv-preview-content .flex {
+                  #cv-preview-content li, #cv-preview-content .flex, #cv-preview-content .grid {
                     break-inside: avoid !important;
                     page-break-inside: avoid !important;
                   }
@@ -1476,6 +1539,27 @@ export default function App() {
                     break-inside: avoid !important;
                     page-break-inside: avoid !important;
                     margin-bottom: 2rem;
+                  }
+                  /* Visual page break indicator for editor */
+                  @media screen {
+                    #cv-preview-content {
+                      position: relative;
+                      background-image: linear-gradient(to bottom, transparent 296.5mm, #e5e7eb 296.5mm, #e5e7eb 297mm, #f9fafb 297mm, #f9fafb 302mm, transparent 302mm);
+                      background-size: 100% 302mm;
+                    }
+                    #cv-preview-content::after {
+                      content: "Page 1 End";
+                      position: absolute;
+                      top: 297mm;
+                      right: 0;
+                      font-size: 10px;
+                      color: #9ca3af;
+                      padding: 2px 8px;
+                      background: #f3f4f6;
+                      border-radius: 0 0 0 4px;
+                      pointer-events: none;
+                      z-index: 10;
+                    }
                   }
                 `}</style>
                 {/* Header with Title */}
