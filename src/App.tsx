@@ -890,19 +890,84 @@ export default function App() {
       const isHidden = window.getComputedStyle(element).display === 'none';
       if (isHidden) {
         setActiveTab('preview');
-        // Wait for DOM update - increased for production reliability
-        await new Promise(resolve => setTimeout(resolve, 800));
+        // Wait for DOM update
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      // Re-check element after tab switch
       const finalElement = document.getElementById('cv-preview-content');
       if (!finalElement) throw new Error('CV content element lost after tab switch');
 
-      // Robust check for html2pdf function (handles different bundling behaviors)
+      // Robust check for html2pdf function
       const html2pdfFunc = typeof html2pdf === 'function' ? html2pdf : (html2pdf as any).default;
       if (typeof html2pdfFunc !== 'function') {
         throw new Error('PDF library (html2pdf) not correctly loaded');
       }
+
+      // --- MANUAL CLONE & SANITIZE ---
+      // This ensures html2canvas never sees unsupported CSS color functions
+      const clone = finalElement.cloneNode(true) as HTMLElement;
+      
+      // 1. Remove problematic decorative elements
+      const blurs = clone.querySelectorAll('.blur-3xl');
+      blurs.forEach(el => (el as HTMLElement).remove());
+      
+      // 2. Sanitize modern colors (oklch, oklab, color-mix, light-dark)
+      const modernColorRegex = /(?:oklch|oklab|color-mix|light-dark)\((?:[^()]+|\([^()]*\))*\)/g;
+      const allElements = clone.getElementsByTagName('*');
+      
+      for (let i = 0; i < allElements.length; i++) {
+        const el = allElements[i] as HTMLElement;
+        
+        // Inline styles
+        const styleAttr = el.getAttribute('style');
+        if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab') || styleAttr.includes('color-mix') || styleAttr.includes('light-dark'))) {
+          el.setAttribute('style', styleAttr.replace(modernColorRegex, currentTheme.primary));
+        }
+
+        // SVG attributes
+        ['fill', 'stroke', 'color'].forEach(attr => {
+          const val = el.getAttribute(attr);
+          if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('color-mix') || val.includes('light-dark'))) {
+            el.setAttribute(attr, currentTheme.primary);
+          }
+        });
+      }
+
+      // 3. Add a wrapper to the clone to ensure it's visible and has correct styles
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      container.style.width = '1024px'; // Match windowWidth
+      
+      // Add a style tag to the container to override common Tailwind classes with safe colors
+      const styleOverride = document.createElement('style');
+      styleOverride.innerHTML = `
+        /* Force standard colors for common Tailwind classes during PDF export */
+        .bg-white { background-color: #ffffff !important; }
+        .text-stone-800 { color: #292524 !important; }
+        .text-stone-700 { color: #44403c !important; }
+        .text-stone-600 { color: #57534e !important; }
+        .text-stone-500 { color: #78716c !important; }
+        .text-stone-400 { color: #a8a29e !important; }
+        .text-stone-300 { color: #d6d3d1 !important; }
+        .border-stone-100 { border-color: #f5f5f4 !important; }
+        .border-stone-200 { border-color: #e7e5e4 !important; }
+        
+        /* Ensure the blue header layout still works */
+        header { -webkit-print-color-adjust: exact; }
+        
+        /* Global fallback for any missed modern colors in the clone */
+        #pdf-clone-root * { 
+          accent-color: ${currentTheme.primary} !important;
+          color-scheme: light !important;
+        }
+      `;
+      
+      clone.id = 'pdf-clone-root';
+      container.appendChild(styleOverride);
+      container.appendChild(clone);
+      document.body.appendChild(container);
 
       const opt = {
         margin: 0,
@@ -911,91 +976,24 @@ export default function App() {
         html2canvas: { 
           scale: 2, 
           useCORS: true,
-          letterRendering: true,
+          logging: false,
           scrollY: 0,
-          windowWidth: 1024,
-          onclone: (clonedDoc: Document) => {
-            // Remove problematic decorative elements for PDF
-            const blurs = clonedDoc.querySelectorAll('.blur-3xl');
-            blurs.forEach(el => (el as HTMLElement).style.display = 'none');
-            
-            // Remove visual page break indicators that might use modern CSS units/gradients
-            const preview = clonedDoc.getElementById('cv-preview-content');
-            if (preview) {
-              preview.style.fontFamily = 'Arial, sans-serif';
-              preview.style.backgroundImage = 'none'; // Remove gradient indicators
-              
-              // Recursively find all elements and replace modern colors in their style and other attributes
-              const allElements = preview.getElementsByTagName('*');
-              // Improved regex to handle nested parentheses (like var() inside oklch)
-              const modernColorRegex = /(?:oklch|oklab|color-mix|light-dark)\((?:[^()]+|\([^()]*\))*\)/g;
-              
-              for (let i = 0; i < allElements.length; i++) {
-                const el = allElements[i] as HTMLElement;
-                
-                // 1. Clean inline styles
-                const styleAttr = el.getAttribute('style');
-                if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab') || styleAttr.includes('color-mix') || styleAttr.includes('light-dark'))) {
-                  const safeStyle = styleAttr.replace(modernColorRegex, currentTheme.primary);
-                  el.setAttribute('style', safeStyle);
-                }
-
-                // 2. Clean common color attributes for SVGs/Icons
-                ['fill', 'stroke', 'color'].forEach(attr => {
-                  const val = el.getAttribute(attr);
-                  if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('color-mix') || val.includes('light-dark'))) {
-                    el.setAttribute(attr, currentTheme.primary);
-                  }
-                });
-              }
-            }
-
-            // AGGRESSIVE FIX: Strip modern color functions from ALL style tags
-            const styleTags = clonedDoc.getElementsByTagName('style');
-            const modernColorRegexGlobal = /(?:oklch|oklab|color-mix|light-dark)\((?:[^()]+|\([^()]*\))*\)/g;
-            
-            for (let i = 0; i < styleTags.length; i++) {
-              const styleTag = styleTags[i];
-              if (styleTag.innerHTML.includes('oklch') || styleTag.innerHTML.includes('oklab') || styleTag.innerHTML.includes('color-mix') || styleTag.innerHTML.includes('light-dark')) {
-                styleTag.innerHTML = styleTag.innerHTML.replace(modernColorRegexGlobal, currentTheme.primary);
-              }
-            }
-
-            // Add a style tag to the cloned document to override common Tailwind classes with safe colors
-            const style = clonedDoc.createElement('style');
-            style.innerHTML = `
-              /* Force standard colors for common Tailwind classes */
-              .bg-white { background-color: #ffffff !important; }
-              .text-stone-800 { color: #292524 !important; }
-              .text-stone-700 { color: #44403c !important; }
-              .text-stone-600 { color: #57534e !important; }
-              .text-stone-500 { color: #78716c !important; }
-              .text-stone-400 { color: #a8a29e !important; }
-              .text-stone-300 { color: #d6d3d1 !important; }
-              .border-stone-100 { border-color: #f5f5f4 !important; }
-              .border-stone-200 { border-color: #e7e5e4 !important; }
-              
-              /* Ensure the blue header layout still works if selected */
-              header { -webkit-print-color-adjust: exact; }
-              
-              /* Global fallback for any missed modern colors */
-              * { 
-                scrollbar-color: auto !important;
-                accent-color: ${currentTheme.primary} !important;
-              }
-            `;
-            clonedDoc.head.appendChild(style);
-          }
+          windowWidth: 1024
         },
         jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      const worker = html2pdfFunc().set(opt).from(finalElement);
-      await worker.save();
+      try {
+        await html2pdfFunc().set(opt).from(clone).save();
+      } finally {
+        // Cleanup
+        document.body.removeChild(container);
+      }
     } catch (error) {
       console.error('PDF Generation Error:', error);
-      alert('There was an error generating the PDF. Please try using the browser Print (Ctrl+P) and select "Save as PDF" instead.');
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      alert(`There was an error generating the PDF: ${errorMsg}\n\nPlease try using the browser Print (Ctrl+P) and select "Save as PDF" instead.`);
     } finally {
       setTimeout(() => setIsGenerating(false), 500);
     }
