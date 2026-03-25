@@ -903,71 +903,9 @@ export default function App() {
         throw new Error('PDF library (html2pdf) not correctly loaded');
       }
 
-      // --- MANUAL CLONE & SANITIZE ---
-      // This ensures html2canvas never sees unsupported CSS color functions
-      const clone = finalElement.cloneNode(true) as HTMLElement;
-      
-      // 1. Remove problematic decorative elements
-      const blurs = clone.querySelectorAll('.blur-3xl');
-      blurs.forEach(el => (el as HTMLElement).remove());
-      
-      // 2. Sanitize modern colors (oklch, oklab, color-mix, light-dark)
-      const modernColorRegex = /(?:oklch|oklab|color-mix|light-dark)\((?:[^()]+|\([^()]*\))*\)/g;
-      const allElements = clone.getElementsByTagName('*');
-      
-      for (let i = 0; i < allElements.length; i++) {
-        const el = allElements[i] as HTMLElement;
-        
-        // Inline styles
-        const styleAttr = el.getAttribute('style');
-        if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab') || styleAttr.includes('color-mix') || styleAttr.includes('light-dark'))) {
-          el.setAttribute('style', styleAttr.replace(modernColorRegex, currentTheme.primary));
-        }
+      // --- COMPREHENSIVE SANITIZATION ---
+      // with modern CSS color functions like oklab/oklch.
 
-        // SVG attributes
-        ['fill', 'stroke', 'color'].forEach(attr => {
-          const val = el.getAttribute(attr);
-          if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('color-mix') || val.includes('light-dark'))) {
-            el.setAttribute(attr, currentTheme.primary);
-          }
-        });
-      }
-
-      // 3. Add a wrapper to the clone to ensure it's visible and has correct styles
-      const container = document.createElement('div');
-      container.style.position = 'absolute';
-      container.style.left = '-9999px';
-      container.style.top = '0';
-      container.style.width = '1024px'; // Match windowWidth
-      
-      // Add a style tag to the container to override common Tailwind classes with safe colors
-      const styleOverride = document.createElement('style');
-      styleOverride.innerHTML = `
-        /* Force standard colors for common Tailwind classes during PDF export */
-        .bg-white { background-color: #ffffff !important; }
-        .text-stone-800 { color: #292524 !important; }
-        .text-stone-700 { color: #44403c !important; }
-        .text-stone-600 { color: #57534e !important; }
-        .text-stone-500 { color: #78716c !important; }
-        .text-stone-400 { color: #a8a29e !important; }
-        .text-stone-300 { color: #d6d3d1 !important; }
-        .border-stone-100 { border-color: #f5f5f4 !important; }
-        .border-stone-200 { border-color: #e7e5e4 !important; }
-        
-        /* Ensure the blue header layout still works */
-        header { -webkit-print-color-adjust: exact; }
-        
-        /* Global fallback for any missed modern colors in the clone */
-        #pdf-clone-root * { 
-          accent-color: ${currentTheme.primary} !important;
-          color-scheme: light !important;
-        }
-      `;
-      
-      clone.id = 'pdf-clone-root';
-      container.appendChild(styleOverride);
-      container.appendChild(clone);
-      document.body.appendChild(container);
 
       const opt = {
         margin: 0,
@@ -978,18 +916,82 @@ export default function App() {
           useCORS: true,
           logging: false,
           scrollY: 0,
-          windowWidth: 1024
+          windowWidth: 1024,
+          onclone: (clonedDoc: Document) => {
+            // 1. Remove problematic decorative elements
+            const blurs = clonedDoc.querySelectorAll('.blur-3xl');
+            blurs.forEach(el => (el as HTMLElement).style.display = 'none');
+            
+            // 2. Aggressive regex for modern color functions
+            // Handles nested parentheses like color-mix(in srgb, oklch(...), ...)
+            const modernColorRegex = /(?:oklch|oklab|color-mix|light-dark)\((?:[^()]+|\([^()]*\))*\)/g;
+            const fallbackColor = currentTheme.primary;
+
+            // 3. Sanitize all elements in the cloned document
+            const allElements = clonedDoc.getElementsByTagName('*');
+            for (let i = 0; i < allElements.length; i++) {
+              const el = allElements[i] as HTMLElement;
+              
+              // Clean inline styles
+              const styleAttr = el.getAttribute('style');
+              if (styleAttr && (styleAttr.includes('oklch') || styleAttr.includes('oklab') || styleAttr.includes('color-mix') || styleAttr.includes('light-dark'))) {
+                el.setAttribute('style', styleAttr.replace(modernColorRegex, fallbackColor));
+              }
+
+              // Clean SVG attributes
+              ['fill', 'stroke', 'color'].forEach(attr => {
+                const val = el.getAttribute(attr);
+                if (val && (val.includes('oklch') || val.includes('oklab') || val.includes('color-mix') || val.includes('light-dark'))) {
+                  el.setAttribute(attr, fallbackColor);
+                }
+              });
+            }
+
+            // 4. Sanitize all <style> tags in the cloned document
+            // This is crucial because html2canvas reads computed styles from these tags
+            const styleTags = clonedDoc.getElementsByTagName('style');
+            for (let i = 0; i < styleTags.length; i++) {
+              const styleTag = styleTags[i];
+              try {
+                if (styleTag.innerHTML.includes('oklch') || styleTag.innerHTML.includes('oklab') || styleTag.innerHTML.includes('color-mix') || styleTag.innerHTML.includes('light-dark')) {
+                  styleTag.innerHTML = styleTag.innerHTML.replace(modernColorRegex, fallbackColor);
+                }
+              } catch (e) {
+                console.warn('Could not sanitize style tag:', e);
+              }
+            }
+
+            // 5. Add a global override style tag
+            const style = clonedDoc.createElement('style');
+            style.innerHTML = `
+              /* Force standard colors for common Tailwind classes */
+              .bg-white { background-color: #ffffff !important; }
+              .text-stone-800 { color: #292524 !important; }
+              .text-stone-700 { color: #44403c !important; }
+              .text-stone-600 { color: #57534e !important; }
+              .text-stone-500 { color: #78716c !important; }
+              .text-stone-400 { color: #a8a29e !important; }
+              .text-stone-300 { color: #d6d3d1 !important; }
+              .border-stone-100 { border-color: #f5f5f4 !important; }
+              .border-stone-200 { border-color: #e7e5e4 !important; }
+              
+              /* Ensure the blue header layout still works */
+              header { -webkit-print-color-adjust: exact; }
+              
+              /* Global fallback for any missed modern colors */
+              * { 
+                accent-color: ${currentTheme.primary} !important;
+                color-scheme: light !important;
+              }
+            `;
+            clonedDoc.head.appendChild(style);
+          }
         },
         jsPDF: { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const },
         pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
       };
 
-      try {
-        await html2pdfFunc().set(opt).from(clone).save();
-      } finally {
-        // Cleanup
-        document.body.removeChild(container);
-      }
+      await html2pdfFunc().set(opt).from(finalElement).save();
     } catch (error) {
       console.error('PDF Generation Error:', error);
       const errorMsg = error instanceof Error ? error.message : String(error);
